@@ -1,1 +1,1 @@
-# fictional-octo-palm-tree
+print(game.Players.localplayer)
