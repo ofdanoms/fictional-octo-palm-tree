@@ -1,1 +1,98 @@
-print(game.Players.localplayer)
+-- Require GUI + Draggable Button Launcher
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local PlayerGui = player:WaitForChild("PlayerGui")
+
+-- === ScreenGui ===
+local gui = Instance.new("ScreenGui", PlayerGui)
+gui.Name = "RequireGUI"
+gui.ResetOnSpawn = false
+
+-- === Main Frame ===
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 350, 0, 200)
+frame.Position = UDim2.new(0.5, -175, 0.5, -100)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
+frame.Visible = false
+frame.Parent = gui
+
+-- === Label ===
+local label = Instance.new("TextLabel", frame)
+label.Size = UDim2.new(1, 0, 0.2, 0)
+label.Position = UDim2.new(0, 0, 0, 0)
+label.Text = "Type require() code:"
+label.BackgroundTransparency = 1
+label.Font = Enum.Font.SourceSansBold
+label.TextColor3 = Color3.new(1, 1, 1)
+label.TextSize = 20
+
+-- === Input Box ===
+local box = Instance.new("TextBox", frame)
+box.PlaceholderText = 'e.g. require(123456).cool("me")'
+box.Text = ""
+box.Size = UDim2.new(1, -20, 0.4, 0)
+box.Position = UDim2.new(0, 10, 0.25, 0)
+box.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+box.TextColor3 = Color3.new(1, 1, 1)
+box.TextSize = 18
+box.Font = Enum.Font.Code
+box.ClearTextOnFocus = false
+box.Parent = frame
+
+-- === Run Button ===
+local run = Instance.new("TextButton", frame)
+run.Text = "Run"
+run.Size = UDim2.new(0.5, -15, 0.2, 0)
+run.Position = UDim2.new(0, 10, 0.75, 0)
+run.BackgroundColor3 = Color3.fromRGB(50, 180, 80)
+run.TextColor3 = Color3.new(0, 0, 0)
+run.Font = Enum.Font.SourceSansBold
+run.TextSize = 20
+run.Parent = frame
+
+-- === Close Button ===
+local close = Instance.new("TextButton", frame)
+close.Text = "Close"
+close.Size = UDim2.new(0.5, -15, 0.2, 0)
+close.Position = UDim2.new(0.5, 5, 0.75, 0)
+close.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+close.TextColor3 = Color3.new(0, 0, 0)
+close.Font = Enum.Font.SourceSansBold
+close.TextSize = 20
+close.Parent = frame
+
+-- === "Req" Toggle Button ===
+local toggleBtn = Instance.new("TextButton", gui)
+toggleBtn.Text = "Req"
+toggleBtn.Size = UDim2.new(0, 60, 0, 30)
+toggleBtn.Position = UDim2.new(0, 10, 0, 10)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(90, 90, 255)
+toggleBtn.TextColor3 = Color3.new(1, 1, 1)
+toggleBtn.Font = Enum.Font.SourceSansBold
+toggleBtn.TextSize = 18
+toggleBtn.Draggable = true
+toggleBtn.Active = true
+
+-- === Logic ===
+run.MouseButton1Click:Connect(function()
+	local input = box.Text
+	if input and input:match("^require%(") then
+		local ok, err = pcall(function()
+			local f = loadstring("return " .. input)
+			if f then f() end
+		end)
+		if not ok then warn("Execution error:", err) end
+	else
+		warn("Invalid input: must begin with require(")
+	end
+end)
+
+close.MouseButton1Click:Connect(function()
+	frame.Visible = false
+end)
+
+toggleBtn.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
+end)
